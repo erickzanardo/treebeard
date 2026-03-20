@@ -1,0 +1,109 @@
+treebeard() {
+  local TREEBEARD_DIR="$HOME/.treebeard"
+  local cmd="${1}"
+
+  case "$cmd" in
+    new)
+      local name="$2"
+      if [ -z "$name" ]; then
+        echo "Usage: treebeard new <name>" >&2
+        return 1
+      fi
+
+      local repo
+      repo=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
+      if [ -z "$repo" ]; then
+        echo "Error: not in a git repository" >&2
+        return 1
+      fi
+
+      local worktree_path="$TREEBEARD_DIR/$repo/$name"
+      mkdir -p "$(dirname "$worktree_path")"
+      git worktree add "$worktree_path" -b "$name"
+      echo "Created worktree at $worktree_path"
+      ;;
+
+    list)
+      if [ ! -d "$TREEBEARD_DIR" ]; then
+        echo "No worktrees found"
+        return 0
+      fi
+
+      local found=0
+      local dirs
+      dirs=$(find "$TREEBEARD_DIR" -mindepth 2 -maxdepth 2 -type d | sort)
+      if [ -n "$dirs" ]; then
+        found=1
+        while IFS= read -r dir; do
+          echo "${dir#"$TREEBEARD_DIR/"}"
+        done <<< "$dirs"
+      fi
+
+      if [ "$found" -eq 0 ]; then
+        echo "No worktrees found"
+      fi
+      ;;
+
+    cd)
+      local target="$2"
+      if [ -z "$target" ]; then
+        echo "Usage: treebeard cd <repo>/<name>" >&2
+        return 1
+      fi
+
+      local worktree_path="$TREEBEARD_DIR/$target"
+      if [ ! -d "$worktree_path" ]; then
+        echo "Error: worktree not found: $target" >&2
+        return 1
+      fi
+
+      cd "$worktree_path"
+      ;;
+
+    cp)
+      local target="$2"
+      local file="$3"
+      if [ -z "$target" ] || [ -z "$file" ]; then
+        echo "Usage: treebeard cp <repo>/<name> <file>" >&2
+        return 1
+      fi
+
+      local worktree_path="$TREEBEARD_DIR/$target"
+      if [ ! -d "$worktree_path" ]; then
+        echo "Error: worktree not found: $target" >&2
+        return 1
+      fi
+
+      cp "$file" "$worktree_path/"
+      ;;
+
+    mv)
+      local target="$2"
+      local file="$3"
+      if [ -z "$target" ] || [ -z "$file" ]; then
+        echo "Usage: treebeard mv <repo>/<name> <file>" >&2
+        return 1
+      fi
+
+      local worktree_path="$TREEBEARD_DIR/$target"
+      if [ ! -d "$worktree_path" ]; then
+        echo "Error: worktree not found: $target" >&2
+        return 1
+      fi
+
+      mv "$file" "$worktree_path/"
+      ;;
+
+    *)
+      echo "Usage: treebeard <new|list|cd|cp|mv>" >&2
+      echo ""
+      echo "Commands:"
+      echo "  new <name>              Create a new worktree for the current git repo"
+      echo "  list                    List all recorded worktrees"
+      echo "  cd <repo>/<name>        cd into a worktree"
+      echo "  cp <repo>/<name> <file> Copy a file into a worktree"
+      echo "  mv <repo>/<name> <file> Move a file into a worktree"
+      return 1
+      ;;
+  esac
+}
