@@ -95,6 +95,16 @@ treebeard() {
       ;;
 
     *)
+      echo '     \o/  *  \o/'
+      echo '      | /^^^\ |'
+      echo '      ( | | | )'
+      echo '       \|___|/'
+      echo '        |   |'
+      echo '       /     \'
+      echo '      /       \'
+      echo ''
+      echo '  "Do not be hasty."'
+      echo ''
       echo "Usage: treebeard <new|list|cd|cp|mv>" >&2
       echo ""
       echo "Commands:"

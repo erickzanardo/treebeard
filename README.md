@@ -1,5 +1,17 @@
 # treebeard
 
+```
+     \o/  *  \o/
+      | /^^^\ |
+      ( | | | )
+       \|___|/
+        |   |
+       /     \
+      /       \
+
+  "Do not be hasty."
+```
+
 A shell function for managing git worktrees across projects. Worktrees are stored under `~/.treebeard/<repo>/<name>`, keeping them organized and out of your project directories.
 
 ## Installation
