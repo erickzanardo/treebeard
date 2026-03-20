@@ -78,6 +78,27 @@ Moves a file into the specified worktree directory.
 treebeard mv myrepo/my-feature ./config.json
 ```
 
+### `treebeard rm <repo>/<name>`
+
+Removes the specified worktree and deletes its associated branch.
+
+```sh
+treebeard rm myrepo/my-feature
+# Removed worktree myrepo/my-feature
+```
+
+### `treebeard prune [main-branch]`
+
+Removes all worktrees whose branch has already been merged into the main branch, and deletes those branches. Automatically detects `main` or `master` if no branch is specified.
+
+```sh
+treebeard prune
+# Pruned myrepo/my-feature (merged into main)
+
+treebeard prune develop
+# Pruned myrepo/my-feature (merged into develop)
+```
+
 ## How it works
 
 Worktrees are stored at `~/.treebeard/<repo>/<name>`. The repo name is derived automatically from the root of the current git repository. This keeps worktrees centralized and separate from the original project directories.
