@@ -17,6 +17,17 @@ treebeard() {
         return 1
       fi
 
+      echo "Fetching from remote..."
+      git fetch
+
+      if git rev-parse --abbrev-ref --symbolic-full-name '@{u}' &>/dev/null; then
+        if ! git pull --ff-only; then
+          echo "Warning: could not fast-forward current branch, worktree will use local state" >&2
+        fi
+      else
+        echo "No upstream set for current branch, skipping pull"
+      fi
+
       local worktree_path="$TREEBEARD_DIR/$repo/$name"
       mkdir -p "$(dirname "$worktree_path")"
       git worktree add "$worktree_path" -b "$name"
